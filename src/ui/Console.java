@@ -3,6 +3,7 @@ package ui;
 import domain.Movie;
 import domain.validators.MovieValidator;
 import domain.validators.RentalException;
+import domain.validators.ValidatorException;
 import service.MovieService;
 
 import java.io.BufferedReader;
@@ -15,20 +16,148 @@ import java.util.Set;
 
 public class Console {
     private MovieService movieService;
-    private MovieValidator validator = new MovieValidator();
 
     public Console(MovieService ms) {
         this.movieService = ms;
     }
 
     public void runConsole() {
-        addMovies();
-        printAllMovies();
-        filterMovies();
-        deleteMovies();
-        updateMovies();
-    }
+        BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+        String command;
+        while(true){
+            try{
+                System.out.println(
+                        "MAIN MENU \n" +
+                                "1. movie menu \n"+
+                                "2. client menu \n"+
+                                "3. rent menu \n" +
+                                "0. exit"
 
+                );
+                command = bufferRead.readLine();
+                switch (command){
+                    case "1":
+                        movieMenu();
+                    case "2":
+                        clientMenu();
+                    case "3":
+                        rentMenu();
+                    case "0":
+                        break;
+                    default:
+                        System.out.println("Invalid command !");
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
+    private void movieMenu(){
+        printAllMovies();
+        BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+        String command;
+        while(true){
+            try{
+                printAllMovies();
+                System.out.println(
+                                "MOVIE MENU \n" +
+                                "1. add movie \n"+
+                                "2. delete movie \n"+
+                                "3. update movie \n" +
+                                "4. filter movie \n" +
+                                "0. exit"
+
+                );
+                command = bufferRead.readLine();
+                switch (command){
+                    case "1":
+                        addMovies();
+                    case "2":
+                        deleteMovies();
+                    case "3":
+                        updateMovies();
+                    case "4":
+                        filterMovies();
+                    case "0":
+                        break;
+                    default:
+                        System.out.println("Invalid command !");
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
+    private void clientMenu(){
+        BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+        String command;
+        while(true){
+            try{
+                printAllMovies();
+                System.out.println(
+                                "CLIENT MENU \n"+
+                                "1. add client \n"+
+                                "2. delete client \n"+
+                                "3. update client \n" +
+                                "4. filter client \n" +
+                                "0. exit"
+
+                );
+                command = bufferRead.readLine();
+                switch (command){
+                    case "1":
+                        return;
+                    case "2":
+                        return;
+                    case "3":
+                        return;
+                    case "4":
+                        return;
+                    case "0":
+                        break;
+                    default:
+                        System.out.println("Invalid command !");
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
+    private void rentMenu(){
+        BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+        String command;
+        while(true){
+            try{
+                printAllMovies();
+                System.out.println(
+                                "RENT MENU \n"+
+                                "1. add client \n"+
+                                "2. delete client \n"+
+                                "3. update client \n" +
+                                "4. filter client \n" +
+                                "0. exit"
+
+                );
+                command = bufferRead.readLine();
+                switch (command){
+                    case "1":
+                        break;
+                    case "2":
+                        return;
+                    case "3":
+                        return;
+                    case "4":
+                        return;
+                    case "0":
+                        break;
+                    default:
+                        System.out.println("Invalid command !");
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+    }
     private void filterMovies() {
         System.out.println("filtered movies (type 'action'):");
         Set<Movie> movies = movieService.filterMovieByType("action");
@@ -103,10 +232,12 @@ public class Console {
                 int availableCopies = Integer.parseInt(bufferRead.readLine());// ...
                 movie = new Movie(name, director, type, availableCopies);
                 movie.setId(id);
-                validator.validate(movie);
             }
             return movie;
-        }catch (IOException ex) {
+        }catch (ValidatorException e){
+            System.out.println("Error: " + e);
+        }
+        catch (IOException ex) {
             ex.printStackTrace();
         }
         return null;

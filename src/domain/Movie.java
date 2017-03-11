@@ -30,7 +30,12 @@ public class Movie extends BaseEntity<Long> {
     }
     public int getAvailableCopies(){return this.availableCopies;}
     public String toString() {
-        return "Movie '" + name + "', " + genre + ", directed by " + director + " has " + availableCopies + " avaible copies for rent.";
+        return "Movie{" +
+                "name='" + name + '\'' +
+                ", director='" + director + '\'' +
+                ", genre='" + genre + '\'' +
+                ", available copies =" + availableCopies +
+                "} " + super.toString();
     }
     //endregion
 }

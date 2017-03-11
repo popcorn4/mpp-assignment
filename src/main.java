@@ -1,5 +1,7 @@
 import domain.Movie;
 
+import domain.validators.MovieValidator;
+import domain.validators.Validator;
 import repository.InMemoryRepository;
 import repository.Repository;
 import service.MovieService;
@@ -10,8 +12,9 @@ import ui.Console;
  */
 public class main {
     public static void main(String[] args){
+        Validator<Movie> validator = new MovieValidator();
         Repository<Long, Movie> movieRepository =
-                new InMemoryRepository<>();
+                new InMemoryRepository<>(validator);
         MovieService movieService = new MovieService(movieRepository);
         Console console = new Console(movieService);
         console.runConsole();
