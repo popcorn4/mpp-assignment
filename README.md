@@ -1,6 +1,6 @@
 #Lab Task
 
-###Movie rental
+P3. Movie rental
 A movie rental shop manages information about movies and clients.
 
 Create an application which allows to:
@@ -13,3 +13,10 @@ Create an application which allows to:
 
 -reports: e.g. find the most rented movie
 
+
+##Group Students
+-Victor Motogna
+
+-Paul Muresan
+
+-Timofte Alexandru-Nicusor

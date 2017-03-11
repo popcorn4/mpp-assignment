@@ -32,9 +32,18 @@ public class MovieService {
         Iterable<Movie> movies = repository.findAll();
         Set<Movie> filteredMovies= new HashSet<>();
         movies.forEach(filteredMovies::add);
-        filteredMovies.removeIf(movie -> !movie.getType().contains(m));
+        filteredMovies.removeIf(movie -> !movie.getGenre().contains(m));
 
         return filteredMovies;
     }
 
+    public void deleteMovie(Movie movie) {
+//        Iterable<Movie> movies = repository.findAll();
+//        movies.removeIf(m -> m.getName() == movie.getName())
+        repository.delete(movie.getId());
+    }
+
+    public void updateMovie(Movie movie) {
+        repository.update(movie);
+   }
 }

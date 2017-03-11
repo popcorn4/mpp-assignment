@@ -16,6 +16,6 @@ public class main {
         Console console = new Console(movieService);
         console.runConsole();
 
-        System.out.println("Hello World!");
+        //System.out.println("Hello World!");
     }
 }

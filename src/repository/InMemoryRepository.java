@@ -1,6 +1,7 @@
 package repository;
 
 import domain.BaseEntity;
+import domain.validators.Validator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,10 +14,11 @@ import java.util.stream.Collectors;
  */
 
 public class InMemoryRepository<ID, T extends BaseEntity<ID>> implements Repository<ID, T> {
-
+    private Validator<T> validator;
     private Map<ID, T> entities;
 
-    public InMemoryRepository() {
+    public InMemoryRepository(Validator<T> v) {
+        this.validator=v;
         entities = new HashMap<>();
     }
 

@@ -1,6 +1,8 @@
 package ui;
 
 import domain.Movie;
+import domain.validators.MovieValidator;
+import domain.validators.RentalException;
 import service.MovieService;
 
 import java.io.BufferedReader;
@@ -13,6 +15,7 @@ import java.util.Set;
 
 public class Console {
     private MovieService movieService;
+    private MovieValidator validator = new MovieValidator();
 
     public Console(MovieService ms) {
         this.movieService = ms;
@@ -22,6 +25,8 @@ public class Console {
         addMovies();
         printAllMovies();
         filterMovies();
+        deleteMovies();
+        updateMovies();
     }
 
     private void filterMovies() {
@@ -49,25 +54,60 @@ public class Console {
         }
     }
 
-    private Movie readMovie() {
-        System.out.println("Read movie {id, name, director, type, availableCopies}: ");
+    private void deleteMovies() {
+        while (true) {
+            Movie movie = readMovie();
+            if (movie == null || movie.getId() < 0 || !movieService.getAllMovies().contains(movie))
+                break;
+            try {
+                movieService.deleteMovie(movie);
+            } catch (Exception e) {
+                System.out.println("The movie read is not valid or is not in the list of movies.");
+            }
+        }
+    }
 
+    private void updateMovies() {
+        while (true) {
+            Movie movie = readMovie();
+            if (movie == null || movie.getId() < 0 || !movieService.getAllMovies().contains(movie))
+                break;
+            try {
+                movieService.updateMovie(movie);
+            } catch (Exception e) {
+                System.out.println("The movie read is not valid or is not in the list of movies.");
+            }
+        }
+    }
+
+    private Movie readMovie() throws RentalException {
+        System.out.println("Read movie {id, name, director, genre, availableCopies}: ");
+
+        Movie movie;
         BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
         try {
+            System.out.println("id(int): ");
             Long id = Long.valueOf(bufferRead.readLine());// ...
-            String name = bufferRead.readLine();
-            String director = bufferRead.readLine();
-            String type = bufferRead.readLine();
-            int availableCopies = Integer.parseInt(bufferRead.readLine());// ...
-
-            Movie movie = new Movie(name, director, type, availableCopies);
-            movie.setId(id);
-
+            if (id<0){
+                Movie m =  new Movie();
+                m.setId(id);
+                return m;
+            }else{
+                System.out.println("movie name(string): ");
+                String name = bufferRead.readLine();
+                System.out.println("movie director(string): ");
+                String director = bufferRead.readLine();
+                System.out.println("movie genre(string): ");
+                String type = bufferRead.readLine();
+                System.out.println("available copies(int): ");
+                int availableCopies = Integer.parseInt(bufferRead.readLine());// ...
+                movie = new Movie(name, director, type, availableCopies);
+                movie.setId(id);
+                validator.validate(movie);
+            }
             return movie;
-        } catch (IOException ex) {
+        }catch (IOException ex) {
             ex.printStackTrace();
-        }catch (NumberFormatException e){
-            e.printStackTrace();
         }
         return null;
     }

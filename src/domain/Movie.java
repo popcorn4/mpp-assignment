@@ -4,10 +4,10 @@ package domain;
  * Created by user on 3/5/2017.
  */
 public class Movie extends BaseEntity<Long> {
-    //region Parameters
+    //region Fields
     String name;
     String director;
-    String type;
+    String genre;
     int availableCopies; //number of available copies available for rent
     //endregion
 
@@ -17,17 +17,20 @@ public class Movie extends BaseEntity<Long> {
     public Movie(String name, String director, String type, int availableCopies) {
         this.name = name;
         this.director = director;
-        this.type = type;
+        this.genre = type;
         this.availableCopies = availableCopies;
     }
     //endregion
 
     //region Methods
-    public String getType(){
-        return this.type;
+    public String getName(){return this.name;}
+    public String getDirector(){return this.director;}
+    public String getGenre(){
+        return this.genre;
     }
+    public int getAvailableCopies(){return this.availableCopies;}
     public String toString() {
-        return "Movie '" + name + "', " + type + ", directed by " + director + " has " + availableCopies + " avaible copies for rent.";
+        return "Movie '" + name + "', " + genre + ", directed by " + director + " has " + availableCopies + " avaible copies for rent.";
     }
     //endregion
 }
