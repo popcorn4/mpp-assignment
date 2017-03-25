@@ -2,7 +2,6 @@ package repository;
 
 
 import domain.Client;
-import domain.Movie;
 import domain.validators.RentalException;
 import domain.validators.Validator;
 import domain.validators.ValidatorException;
@@ -11,8 +10,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import util.XmlReader;
-import util.XmlWriter;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,12 +34,13 @@ public class ClientXmlRepository extends InMemoryRepository<Long, Client> {
 
     public ClientXmlRepository(Validator<Client> v) {
         super(v);
-
-        loadData();
+        findAll();
     }
-    private void loadData() {
+    @Override
+    public Iterable<Client> findAll() {
+        List<Client> clients;
         try{
-            List<Client> clients = loadClients();
+            clients = loadClients();
             clients.forEach((m)->{
                 try {
                     super.save(m);
@@ -51,9 +49,55 @@ public class ClientXmlRepository extends InMemoryRepository<Long, Client> {
                 }
             });
         }catch (Exception e){
-            e.printStackTrace();
             throw new RentalException(e);
         }
+        return clients;
+    }
+
+
+    @Override
+    public Optional<Client> delete(Long id){
+        try {
+            this.removeClient(id);
+        }catch (ParserConfigurationException|IOException|SAXException|TransformerException e){
+            throw new RentalException("Could not delete client from xml",e);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Client> update(Client entity){
+        try {
+            this.delete(entity.getId());
+            this.saveClients(entity);
+        }catch (IOException | SAXException | ParserConfigurationException | TransformerException e){
+            throw new RentalException("Could not update xml client", e);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Client> removeClient(Long id) throws ParserConfigurationException, IOException, SAXException,TransformerException{
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("./data/client1.xml");
+        Element root = document.getDocumentElement();
+
+        NodeList nodes = root.getChildNodes();
+        Stream<Node> nodeStream = IntStream.range(0, nodes.getLength()).mapToObj(nodes::item);
+        nodeStream.forEach((Node node)->{
+            if (node instanceof Element) {
+                Client client = createClientFromNode(node);
+                //search for the id
+                if (client.getId() == id){
+                    //if found , delete the node
+                    node.getParentNode().removeChild(node);
+                }
+            }
+        });
+        //save in file
+        Transformer transformer= TransformerFactory.newInstance().newTransformer();
+        transformer.transform(new DOMSource(document),new StreamResult(new File("./data/client1.xml")));
+
+        return Optional.empty();
+
     }
 
     @Override
@@ -80,8 +124,8 @@ public class ClientXmlRepository extends InMemoryRepository<Long, Client> {
         Stream<Node> nodeStream = IntStream.range(0, nodes.getLength()).mapToObj(nodes::item);
         nodeStream.forEach((Node node)->{
             if (node instanceof Element) {
-                Client rent = createClientFromNode(node);
-                clients.add(rent);
+                Client client = createClientFromNode(node);
+                clients.add(client);
             }
         });
 
@@ -110,31 +154,27 @@ public class ClientXmlRepository extends InMemoryRepository<Long, Client> {
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("./data/client1.xml");
         Element root = document.getDocumentElement();
 
-        Node bookNode = createRentNode(document, root, client);
+        Node bookNode = createClientNode(document, root, client);
         root.appendChild(bookNode);
 
         //save in file
         Transformer transformer= TransformerFactory.newInstance().newTransformer();
-        transformer.transform(new DOMSource(document),new StreamResult(new File("./data/client2.xml")));
+        transformer.transform(new DOMSource(document),new StreamResult(new File("./data/client1.xml")));
     }
 
-    private Node createRentNode(Document document, Element root, Client client) {
-        Node rentNode = document.createElement("rent");
+    private Node createClientNode(Document document, Element root, Client client) {
+        Node clientNode = document.createElement("client");
 
-        ((Element) rentNode).setAttribute("clientid", client.getId().toString());
-        appendChildNodeWithTextContent(document, rentNode, "name", client.getName());
-        appendChildNodeWithTextContent(document, rentNode, "age", String.valueOf(client.getAge()));
+        ((Element) clientNode).setAttribute("clientid", client.getId().toString());
+        appendChildNodeWithTextContent(document, clientNode, "name", client.getName());
+        appendChildNodeWithTextContent(document, clientNode, "age", String.valueOf(client.getAge()));
 
-        return rentNode;
+        return clientNode;
     }
 
     private void appendChildNodeWithTextContent(Document document, Node parent, String tagName, String text) {
         Node node = document.createElement(tagName);
         node.setTextContent(text);
-
         parent.appendChild(node);
     }
-
-
-
 }

@@ -35,22 +35,70 @@ public class RentXmlRepository extends InMemoryRepository<Long, Rent> {
     public RentXmlRepository(Validator<Rent> v) {
         super(v);
 
-        loadData();
+        findAll();
     }
-    private void loadData() {
+    @Override
+    public Iterable<Rent> findAll() {
+        List<Rent> rents;
         try{
-            List<Rent> rents = loadRents();
-            rents.forEach((rn)->{
+            rents = loadRents();
+            rents.forEach((m)->{
                 try {
-                    super.save(rn);
+                    super.save(m);
                 } catch (ValidatorException e) {
                     e.printStackTrace();
                 }
             });
         }catch (Exception e){
-            e.printStackTrace();
             throw new RentalException(e);
         }
+        return rents;
+    }
+
+
+    @Override
+    public Optional<Rent> delete(Long id){
+        try {
+            this.removeRent(id);
+        }catch (ParserConfigurationException|IOException|SAXException|TransformerException e){
+            throw new RentalException("Could not delete rent from xml",e);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Rent> update(Rent entity){
+        try {
+            this.delete(entity.getId());
+            this.saveRents(entity);
+        }catch (IOException | SAXException | ParserConfigurationException | TransformerException e){
+            throw new RentalException("Could not update xml rent", e);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Rent> removeRent(Long id) throws ParserConfigurationException, IOException, SAXException,TransformerException{
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse("./data/rent1.xml");
+        Element root = document.getDocumentElement();
+
+        NodeList nodes = root.getChildNodes();
+        Stream<Node> nodeStream = IntStream.range(0, nodes.getLength()).mapToObj(nodes::item);
+        nodeStream.forEach((Node node)->{
+            if (node instanceof Element) {
+                Rent client = createRentFromNode(node);
+                //search for the id
+                if (client.getId() == id){
+                    //if found , delete the node
+                    node.getParentNode().removeChild(node);
+                }
+            }
+        });
+        //save in file
+        Transformer transformer= TransformerFactory.newInstance().newTransformer();
+        transformer.transform(new DOMSource(document),new StreamResult(new File("./data/rent1.xml")));
+
+        return Optional.empty();
+
     }
 
     @Override
@@ -60,8 +108,7 @@ public class RentXmlRepository extends InMemoryRepository<Long, Rent> {
             return optional;
         }
         try{
-            saveRents(entity); //new XmlWriter<Long, Rent>(fileName).saveToXML(entity.getId() + ","+ entity.getClientId() + "," + entity.getMovieId()+ "," + entity.getNoCopies());
-
+            saveRents(entity);
         }catch (IOException | SAXException | ParserConfigurationException | TransformerException e){
             e.printStackTrace();
         }
@@ -90,13 +137,11 @@ public class RentXmlRepository extends InMemoryRepository<Long, Rent> {
         Long rentId = Long.parseLong (((Element) node).getAttribute("rentid"));
 
 
-       long ClientId = Long.parseLong(getTextContentByTagName((Element) node, "ClientId"));
-        long MovieId = Long.parseLong(getTextContentByTagName((Element) node, "MovieId"));
-        int noCopies = Integer.parseInt(getTextContentByTagName((Element) node, "noCopies"));
-        LocalDateTime rentalDate = LocalDateTime.parse(getTextContentByTagName((Element) node, "rentaldate"));
-        LocalDateTime returnDate = LocalDateTime.parse(getTextContentByTagName((Element) node, "returndate"));
+       long ClientId = Long.parseLong(getTextContentByTagName((Element) node, "clientid"));
+        long MovieId = Long.parseLong(getTextContentByTagName((Element) node, "movieid"));
+        int noCopies = Integer.parseInt(getTextContentByTagName((Element) node, "nocopies"));
 
-        Rent rent = new Rent(ClientId, MovieId, noCopies,rentalDate,returnDate);
+        Rent rent = new Rent(ClientId, MovieId, noCopies);
         rent.setId(rentId);
         return rent;
     }
@@ -117,8 +162,9 @@ public class RentXmlRepository extends InMemoryRepository<Long, Rent> {
 
         //save in file
         Transformer transformer= TransformerFactory.newInstance().newTransformer();
-        transformer.transform(new DOMSource(document),new StreamResult(new File("./data/rent2.xml")));
+        transformer.transform(new DOMSource(document),new StreamResult(new File("./data/rent1.xml")));
     }
+
 
     private Node createRentNode(Document document, Element root, Rent rent) {
         Node rentNode = document.createElement("rent");
@@ -127,9 +173,6 @@ public class RentXmlRepository extends InMemoryRepository<Long, Rent> {
         appendChildNodeWithTextContent(document, rentNode, "clientid", rent.getClientId().toString());
         appendChildNodeWithTextContent(document, rentNode, "movieid", String.valueOf(rent.getMovieId()));
         appendChildNodeWithTextContent(document, rentNode, "nocopies", String.valueOf(rent.getNoCopies()));
-        appendChildNodeWithTextContent(document, rentNode, "rentaldate", String.valueOf(rent.getRentalDate()));
-        appendChildNodeWithTextContent(document, rentNode, "returndate", String.valueOf(rent.getReturnDate()));
-
 
         return rentNode;
     }

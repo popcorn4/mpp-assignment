@@ -42,14 +42,10 @@ public class Rent extends BaseEntity<Long> {
         this.noCopies = noCopies;
         this.rentalDate = rentalDate;
         this.returnDate = null;
-
     }
     //endregion
 
     //region Methods
-    public String toString() {
-        return "Client " + this.ClientID + " rented the movie " + this.MovieID +" on "+ this.rentalDate +" " + " and return it " + this.returnDate + " " +super.toString();
-    }
 
     public Long getClientId() {
         return this.ClientID;
@@ -69,5 +65,13 @@ public class Rent extends BaseEntity<Long> {
     }
 
     public LocalDateTime getReturnDate() {return returnDate;}
+
+    public String toString() {
+        return "Rent{" +
+                "clientId='" + ClientID + '\'' +
+                ", movieId='" + MovieID + '\'' +
+                ", no of copies='" + noCopies + '\'' +
+                "} " + super.toString();
+    }
     //endregion
 }

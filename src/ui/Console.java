@@ -167,7 +167,6 @@ public class Console {
                                 "2. delete rent \n"+
                                 "3. update rent \n" +
                                 "4. filter rent \n" +
-                                "5. return movie \n"+
                                 "0. exit"
 
                 );
@@ -185,8 +184,6 @@ public class Console {
                     case "4":
                         filterRents();
                         break;
-                    case " 5":
-                        returnRent();
                     case "0":
                         System.exit(0);
                     default:
@@ -300,7 +297,6 @@ public class Console {
         }
     }
 
-
     private void printAllClient() {
         Set<Client> clients=clientService.getAllClients();
         clients.stream().forEach(System.out::println);
@@ -344,7 +340,9 @@ public class Console {
     }
 
     private void filterClients() {
-        // TODO
+        System.out.println("filtered clients (age = 15):");
+        Set<Client> clients = clientService.filterClientsByAge(15);
+        clients.stream().forEach(System.out::println);
     }
 
     private void deleteClients() {
@@ -421,12 +419,9 @@ public class Console {
     }
 
     private void filterRents() {
-        //TODO
-    }
-
-
-    private void returnRent() {
-        //TODO
+            System.out.println("filtered rents (number of copies=5):");
+            Set<Rent> rents = rentService.filterRentsByNOC(5);
+            rents.stream().forEach(System.out::println);
     }
 
     private void updateRents() {

@@ -39,7 +39,9 @@ public class Client extends BaseEntity<Long> {
     }
 
     public String toString() {
-        return "Client - " + this.name + ", " + this.age + " years old " + super.toString();
-    }
-    //endregion
+        return "Client{" +
+                "name='" + name + '\'' +
+                ", age='" + age +
+                "} " + super.toString();
+    }//endregion
 }

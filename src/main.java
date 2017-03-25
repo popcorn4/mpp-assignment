@@ -96,7 +96,6 @@ public class main {
                         console = new Console(movieService, clientService, rentService);
                         console.runConsole();
 
-
                     case "0":
                         System.exit(0);
                     default:
