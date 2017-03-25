@@ -7,8 +7,8 @@ import java.util.List;
  */
 public class Client extends BaseEntity<Long> {
     //region Fields
-    String name;
-    int age;
+    private String name;
+    private int age;
 //    List<Long> rentedMovies; // the rented movies this client has currently in his possession
     //endregion
 
@@ -26,12 +26,20 @@ public class Client extends BaseEntity<Long> {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
     public int getAge() {
         return age;
     }
 
     public String toString() {
-        return "Client - " + this.name + ", " + this.age + " years old";
+        return "Client - " + this.name + ", " + this.age + " years old " + super.toString();
     }
     //endregion
 }

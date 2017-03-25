@@ -5,10 +5,10 @@ package domain;
  */
 public class Movie extends BaseEntity<Long> {
     //region Fields
-    String name;
-    String director;
-    String genre;
-    int availableCopies; //number of available copies available for rent
+    private String name;
+    private String director;
+    private String genre;
+    private int availableCopies; //number of available copies available for rent
     //endregion
 
     //region Constructor
@@ -23,12 +23,38 @@ public class Movie extends BaseEntity<Long> {
     //endregion
 
     //region Methods
-    public String getName(){return this.name;}
-    public String getDirector(){return this.director;}
-    public String getGenre(){
+    public String getName() {
+        return this.name;
+    }
+
+    public String getDirector() {
+        return this.director;
+    }
+
+    public String getGenre() {
         return this.genre;
     }
-    public int getAvailableCopies(){return this.availableCopies;}
+
+    public int getAvailableCopies() {
+        return this.availableCopies;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDirector(String director) {
+        this.director = director;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public void setAvailableCopies(int availableCopies) {
+        this.availableCopies = availableCopies;
+    }
+
     public String toString() {
         return "Movie{" +
                 "name='" + name + '\'' +

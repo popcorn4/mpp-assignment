@@ -21,7 +21,7 @@ public class ClientValidator implements Validator<Client> {
             throw new ValidatorException( "Client age not in range [14..95] !");
         }
 
-        if(client.getName().length() < 5){
+        if(client.getName().length() < 4){
             throw new ValidatorException( "Client name must contain at least 5 characters !");
         }
     }
